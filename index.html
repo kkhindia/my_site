@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="김기환 로컬 웹 개발 서버 대시보드 - 실시간 서버 상태 모니터링, API 테스터 및 웹 개발 허브">
+  <meta name="author" content="김기환">
+  <title>김기환 — 로컬 웹 개발 서버 및 대시보드</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="cyan">
+  <!-- Subtle Background Grid -->
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <!-- Navigation Bar -->
+  <header class="site-header">
+    <div class="container nav-content">
+      <a href="/" class="brand" id="brand-logo" aria-label="김기환 홈">
+        <div class="brand-icon">K</div>
+        <div>
+          <span class="brand-title">김기환</span>
+          <span class="brand-badge">DEV SERVER</span>
+        </div>
+      </a>
+
+      <div class="nav-actions">
+        <!-- Theme Picker -->
+        <div class="theme-picker" title="테마 색상 변경">
+          <button class="theme-dot active" data-pick="cyan" aria-label="사이버 시안 테마" id="theme-btn-cyan"></button>
+          <button class="theme-dot" data-pick="violet" aria-label="네온 바이올렛 테마" id="theme-btn-violet"></button>
+          <button class="theme-dot" data-pick="emerald" aria-label="에메랄드 테마" id="theme-btn-emerald"></button>
+        </div>
+
+        <a href="#api-section" class="btn btn-secondary btn-sm" id="nav-api-btn">API 문서</a>
+        <button class="btn btn-primary btn-sm" id="nav-copy-btn">주소 복사</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero" id="hero-section">
+      <div class="container hero-grid">
+        <div class="hero-text-content">
+          <div class="hero-pill" id="server-status-pill">
+            <span class="pulse-dot" id="server-pulse-dot"></span>
+            <span id="server-status-text">서버 온라인 — 정상 작동 중</span>
+          </div>
+
+          <h1 class="hero-title">
+            김기환의 웹 개발 서버가<br>
+            <span class="gradient-text">성공적으로 실행되었습니다</span>
+          </h1>
+
+          <p class="hero-subtitle">
+            <code>c:\Users\Admin\Desktop\my_site</code> 작업 공간에 경량 고성능 HTTP 서버가 구축되었습니다. 실시간 API 통신, 정적 파일 서빙, 상태 원격 진단을 지원합니다.
+          </p>
+
+          <div class="hero-buttons">
+            <button class="btn btn-primary" id="btn-copy-url">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              로컬 주소 복사하기
+            </button>
+            <a href="/api/status" target="_blank" class="btn btn-secondary" id="btn-open-api">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              /api/status 열기
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-media-wrapper" id="hero-banner-container">
+          <img src="assets/hero-banner.jpg" alt="웹 개발 서버 대시보드 그래픽" class="hero-image" id="hero-banner-img">
+          <div class="hero-media-overlay">
+            <div class="media-tag">
+              호스트: <strong id="overlay-host">127.0.0.1:3000</strong>
+            </div>
+            <div class="media-tag">
+              엔진: <strong>Node.js Native HTTP</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section" id="stats-section" aria-label="서버 텔레메트리 지표">
+      <div class="container">
+        <div class="stats-grid">
+          <article class="stat-card" id="stat-card-status">
+            <div class="stat-icon" aria-hidden="true">🟢</div>
+            <div class="stat-info">
+              <div class="stat-label">서버 상태</div>
+              <div class="stat-value" id="val-status">ONLINE</div>
+            </div>
+          </article>
+
+          <article class="stat-card" id="stat-card-latency">
+            <div class="stat-icon" aria-hidden="true">⚡</div>
+            <div class="stat-info">
+              <div class="stat-label">네트워크 지연 시간</div>
+              <div class="stat-value" id="val-ping">1 ms</div>
+            </div>
+          </article>
+
+          <article class="stat-card" id="stat-card-uptime">
+            <div class="stat-icon" aria-hidden="true">⏱️</div>
+            <div class="stat-info">
+              <div class="stat-label">가동 시간</div>
+              <div class="stat-value" id="val-uptime">0s</div>
+            </div>
+          </article>
+
+          <article class="stat-card" id="stat-card-requests">
+            <div class="stat-icon" aria-hidden="true">📊</div>
+            <div class="stat-info">
+              <div class="stat-label">누적 요청 수</div>
+              <div class="stat-value" id="val-requests">1</div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content & Tools Grid -->
+    <section class="container" id="api-section">
+      <div class="main-sections">
+        
+        <!-- Live Server Control & Telemetry Panel -->
+        <article class="card" id="server-panel">
+          <div class="card-header">
+            <h2 class="card-title">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+              서버 연결 정보
+            </h2>
+            <span class="brand-badge" id="port-badge">PORT 3000</span>
+          </div>
+
+          <div class="server-url-box">
+            <span class="server-url-text" id="display-server-url">http://127.0.0.1:3000</span>
+            <button class="btn btn-secondary btn-sm" id="btn-copy-url-inline">복사</button>
+          </div>
+
+          <div class="ping-tester">
+            <div class="ping-result">
+              <span>핑 테스트:</span>
+              <span class="ping-badge" id="ping-badge-status">정상 (초저지연)</span>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btn-test-ping">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+              핑 재측정
+            </button>
+          </div>
+
+          <div class="info-list">
+            <div class="info-item">
+              <span class="info-key">런타임 엔진</span>
+              <span class="info-val" id="info-node-version">Node.js</span>
+            </div>
+            <div class="info-item">
+              <span class="info-key">운영체제 환경</span>
+              <span class="info-val" id="info-os-platform">Windows x64</span>
+            </div>
+            <div class="info-item">
+              <span class="info-key">루트 디렉터리</span>
+              <span class="info-val" style="font-size:0.75rem;">my_site</span>
+            </div>
+            <div class="info-item">
+              <span class="info-key">실시간 메모리</span>
+              <span class="info-val" id="info-memory">- MB</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Interactive API Playground -->
+        <article class="card" id="api-playground">
+          <div class="card-header">
+            <h2 class="card-title">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+              실시간 API 테스터
+            </h2>
+            <span class="brand-badge">REST API</span>
+          </div>
+
+          <div class="api-selector-bar">
+            <button class="api-tab active" data-endpoint="/api/status" id="tab-status">GET /api/status</button>
+            <button class="api-tab" data-endpoint="/api/routes" id="tab-routes">GET /api/routes</button>
+            <button class="api-tab" data-endpoint="/api/echo" data-method="POST" id="tab-echo">POST /api/echo</button>
+          </div>
+
+          <div class="code-container" id="api-response-container">
+            <pre><code id="api-response-code">// API 테스트 결과를 불러오는 중...</code></pre>
+          </div>
+
+          <div class="run-api-bar">
+            <span class="stat-label" id="api-call-time">응답 시간: -</span>
+            <button class="btn btn-primary btn-sm" id="btn-run-api">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              요청 전송하기
+            </button>
+          </div>
+        </article>
+      </div>
+
+      <!-- Quickstart Development Guide -->
+      <article class="card" id="dev-guide" style="margin-bottom: 60px;">
+        <div class="card-header">
+          <h2 class="card-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            웹 사이트 개발 및 확장 가이드
+          </h2>
+        </div>
+
+        <div class="guide-steps">
+          <div class="step-card">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <h4>HTML / UI 페이지 수정</h4>
+              <p>현재 폴더 내 <code>index.html</code> 파일을 편집하여 원하는 웹사이트 레이아웃과 콘텐츠를 구성하세요.</p>
+              <span class="step-code">c:\Users\Admin\Desktop\my_site\index.html</span>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <h4>디자인 시스템 및 스타일링 적용</h4>
+              <p><code>style.css</code>의 CSS 변수 및 클래스를 수정하여 브랜드 색상, 글꼴, 레이아웃을 즉시 커스터마이징할 수 있습니다.</p>
+              <span class="step-code">c:\Users\Admin\Desktop\my_site\style.css</span>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <h4>새로운 API 엔드포인트 또는 파일 추가</h4>
+              <p><code>server.js</code>에 <code>/api/...</code> 라우트를 자유롭게 추가하거나 이미지, 스크립트, 문서를 폴더에 넣으면 자동으로 서빙됩니다.</p>
+              <span class="step-code">node server.js (또는 start-server.bat 실행)</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div>&copy; 2026 <strong>김기환</strong> Local Web Server. All rights reserved.</div>
+      <div>Designed with Vanilla HTML5, CSS3 &amp; Node.js</div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast-notification" role="status" aria-live="polite">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+    <span id="toast-message">알림</span>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

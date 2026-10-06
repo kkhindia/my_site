@@ -1,0 +1,13 @@
+{
+  "name": "my-site",
+  "version": "1.0.0",
+  "description": "김기환의 로컬 웹 개발 서버 및 대시보드",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["local-server", "web", "dashboard"],
+  "author": "김기환",
+  "license": "MIT"
+}
